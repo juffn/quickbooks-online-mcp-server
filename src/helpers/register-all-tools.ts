@@ -61,6 +61,7 @@ import { GetTransactionListTool } from "../tools/get-transaction-list.tool.js";
 import { QueryQboTool } from "../tools/query-qbo.tool.js";
 import { PrepareJournalEntryTool } from "../tools/prepare-journal-entry.tool.js";
 import { ConfirmJournalEntryTool } from "../tools/confirm-journal-entry.tool.js";
+import { GetTransactionPdfTool } from "../tools/get-transaction-pdf.tool.js";
 
 export function registerAllTools(server: McpServer): void {
   RegisterTool(server, CreateCustomerTool);
@@ -123,4 +124,5 @@ export function registerAllTools(server: McpServer): void {
   RegisterTool(server, QueryQboTool);
   RegisterTool(server, PrepareJournalEntryTool);
   RegisterTool(server, ConfirmJournalEntryTool);
+  RegisterTool(server, GetTransactionPdfTool);
 }

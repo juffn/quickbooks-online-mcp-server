@@ -211,14 +211,17 @@ class QuickbooksClient {
       }
     }
 
-    // Check if token exists and is still valid
     const now = new Date();
-    if (!this.accessToken || !this.accessTokenExpiry || this.accessTokenExpiry <= now) {
-      const tokenResponse = await this.refreshAccessToken();
-      this.accessToken = tokenResponse.access_token;
+
+    // Early return: token is valid and QB instance already exists — skip refresh and reconstruction
+    if (this.quickbooksInstance && this.accessToken && this.accessTokenExpiry && this.accessTokenExpiry > now) {
+      return this.quickbooksInstance;
     }
-    
-    // At this point we know all tokens are available
+
+    // Token expired or missing — refresh and rebuild QB instance
+    const tokenResponse = await this.refreshAccessToken();
+    this.accessToken = tokenResponse.access_token;
+
     this.quickbooksInstance = new QuickBooks(
       this.clientId,
       this.clientSecret,
@@ -231,7 +234,7 @@ class QuickbooksClient {
       '2.0', // oauth version
       this.refreshToken
     );
-    
+
     return this.quickbooksInstance;
   }
   

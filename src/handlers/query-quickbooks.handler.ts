@@ -3,6 +3,8 @@ import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
 import https from "https";
 
+const httpsAgent = new https.Agent({ keepAlive: true });
+
 export interface QueryQuickbooksInput {
   query: string;
 }
@@ -28,6 +30,7 @@ export async function queryQuickbooks(
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
           },
+          agent: httpsAgent,
         },
         (res) => {
           let body = "";

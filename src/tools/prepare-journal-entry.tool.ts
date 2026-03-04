@@ -8,7 +8,11 @@ const toolDescription = `Prepare a journal entry for review WITHOUT posting it t
 Returns a formatted preview showing all lines, debits, credits, and balance verification.
 Also returns a confirmation_id — pass this to confirm_journal_entry to actually post the entry.
 
-Use this instead of create_journal_entry whenever human review is required before posting.`;
+Use this instead of create_journal_entry whenever human review is required before posting.
+
+IMPORTANT — resolve entity references before calling this tool:
+- A/P (Accounts Payable) lines REQUIRE a vendor entity or QBO will reject the entry. Run search_vendors first; if the vendor doesn't exist, create them with create_vendor. Pass the resolved ID as entity: { type: "Vendor", id: "..." } on the A/P line.
+- Revenue lines should have a customer entity when a customer name is mentioned. Run search_customers first; create with create_customer if missing. Pass as entity: { type: "Customer", id: "..." }.`;
 
 const lineSchema = z.object({
   account_id: z.string().describe("QBO Account ID (from search_accounts)"),
@@ -16,6 +20,10 @@ const lineSchema = z.object({
   debit: z.number().optional().describe("Debit amount. Provide either debit or credit, not both."),
   credit: z.number().optional().describe("Credit amount. Provide either debit or credit, not both."),
   description: z.string().optional().describe("Line-level description or memo"),
+  entity: z.object({
+    type: z.enum(["Vendor", "Customer"]).describe("Entity type"),
+    id: z.string().describe("QBO Vendor or Customer ID"),
+  }).optional().describe("Required for A/P lines (Vendor). Optional for revenue lines (Customer)."),
 });
 
 const toolSchema = z.object({

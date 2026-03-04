@@ -7,6 +7,7 @@ export interface JournalEntryLine {
   debit?: number;
   credit?: number;
   description?: string;
+  entity?: { type: "Vendor" | "Customer"; id: string };
 }
 
 export interface PrepareJournalEntryInput {
@@ -16,10 +17,8 @@ export interface PrepareJournalEntryInput {
   doc_number?: string;
 }
 
-function generateConfirmationId(payload: any): string {
-  const data = JSON.stringify(payload) + Date.now();
-  // Simple hash using built-in btoa
-  return Buffer.from(data).toString("base64").slice(0, 16).replace(/[+/=]/g, "x");
+function generateConfirmationId(): string {
+  return crypto.randomUUID();
 }
 
 function formatPreview(data: PrepareJournalEntryInput): string {
@@ -79,7 +78,7 @@ export async function prepareQuickbooksJournalEntry(
       };
     }
 
-    const confirmationId = generateConfirmationId(data);
+    const confirmationId = generateConfirmationId();
     journalEntryConfirmations.set(confirmationId, data);
 
     const preview = formatPreview(data);

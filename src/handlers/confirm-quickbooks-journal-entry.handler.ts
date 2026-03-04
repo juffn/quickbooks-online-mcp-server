@@ -38,6 +38,12 @@ export async function confirmQuickbooksJournalEntry(
         JournalEntryLineDetail: {
           PostingType: line.debit ? "Debit" : "Credit",
           AccountRef: { value: line.account_id },
+          ...(line.entity && {
+            Entity: {
+              EntityRef: { value: line.entity.id },
+              Type: line.entity.type,
+            },
+          }),
         },
       })),
     };
@@ -53,10 +59,10 @@ export async function confirmQuickbooksJournalEntry(
             journalEntryConfirmations.delete(data.confirmation_id);
             resolve({
               result: {
-                id: created?.JournalEntry?.Id,
-                txn_date: created?.JournalEntry?.TxnDate,
-                doc_number: created?.JournalEntry?.DocNumber,
-                memo: created?.JournalEntry?.PrivateNote,
+                id: created?.Id,
+                txn_date: created?.TxnDate,
+                doc_number: created?.DocNumber,
+                memo: created?.PrivateNote,
               },
               isError: false,
               error: null,
