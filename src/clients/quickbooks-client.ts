@@ -15,7 +15,7 @@ const client_secret = process.env.QUICKBOOKS_CLIENT_SECRET;
 const refresh_token = process.env.QUICKBOOKS_REFRESH_TOKEN;
 const realm_id = process.env.QUICKBOOKS_REALM_ID;
 const environment = process.env.QUICKBOOKS_ENVIRONMENT || 'sandbox';
-const redirect_uri = 'http://localhost:8000/callback';
+const redirect_uri = process.env.QUICKBOOKS_REDIRECTURI || 'http://localhost:3000/callback';
 
 // Only throw error if client_id or client_secret is missing
 if (!client_id || !client_secret || !redirect_uri) {
@@ -63,7 +63,7 @@ class QuickbooksClient {
     }
 
     this.isAuthenticating = true;
-    const port = 8000;
+    const port = parseInt(new URL(this.redirectUri).port) || 3000;
 
     return new Promise((resolve, reject) => {
       // Create temporary server for OAuth callback
