@@ -3,14 +3,14 @@ import { ToolDefinition } from "../types/tool-definition.js";
 import { z } from "zod";
 
 const toolName = "get_transaction_pdf";
-const toolDescription = `Download a transaction as a PDF from QuickBooks Online and return it as a base64-encoded string.
+const toolDescription = `Download a transaction as a PDF from QuickBooks Online and save it to disk.
 
 Supported entity types:
 - invoice
 - estimate
 - salesreceipt
 
-Returns a base64 PDF string. To use the PDF: decode the base64 and save as a .pdf file, or pass it to a tool that accepts base64 PDF data.`;
+Returns the file path where the PDF was saved. Output directory defaults to ~/Downloads; override with PDF_OUTPUT_DIR env var.`;
 
 const toolSchema = z.object({
   entity_type: z
@@ -28,7 +28,7 @@ const toolHandler = async ({ params }: any) => {
     content: [
       {
         type: "text" as const,
-        text: `PDF retrieved for ${response.result!.entity_type} ID ${response.result!.id}.\n\nBase64:\n${response.result!.base64}`,
+        text: `PDF saved: ${response.result!.file_path}`,
       },
     ],
   };
